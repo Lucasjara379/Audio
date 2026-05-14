@@ -19,28 +19,24 @@ if not audio1.is_file():
 
 filename2 = input("Input second audio file that's also in audio_clips: ")
 audio2 = p / filename2
-if not (p / filename1).is_file():
+if not (p / filename2).is_file():
     raise FileNotFoundError(
         "No audio clip exists with filename that was inputted."
     )
 
-y1, sr1 = librosa.load(audio1)
-y2, sr2 = librosa.load(audio2)
+y1, sr1 = librosa.load(str(audio1), sr=22050)
+y2, sr2 = librosa.load(str(audio2), sr=22050)
 
 # convert to mfcc which is apparently good for noticing similarities between songs
 mfcc1 = librosa.feature.mfcc(y=y1, sr=sr1, n_mfcc=13)
-mfcc2 = librosa.feature.mfcc(y2, sr2, n_mfcc=13)
+mfcc2 = librosa.feature.mfcc(y=y2, sr=sr2, n_mfcc=13)
 
 # Use the dynamic time warping algorithm for similarity
 D, wp = librosa.sequence.dtw(X=mfcc1, Y=mfcc2)
 raw_distance = D[-1, -1]
 
-# Find the normalisation constant
-N = np.shape(mfcc1)[1]
-M = np.shape(mfcc2)[1]
-
 # Normalise and evaluate similarity constant between 0 and 1
-normalised_distance = raw_distance / (N + M)
-similarity = 1 / (1 + normalised_distance)
+avg_cost = raw_distance / len(wp)
+similarity = 1 / (1 + avg_cost)
 
-print(f"The similarity of the two audio clips has a value of:\n{similarity}!")
+print(f"The similarity of the two audio clips has a value of:\n{similarity}")
