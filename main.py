@@ -37,6 +37,6 @@ raw_distance = D[-1, -1]
 
 # Normalise and evaluate similarity constant between 0 and 1
 avg_cost = raw_distance / len(wp)
-similarity = 1 / (1 + avg_cost)
-
+T = 20
+similarity = 1 / (1 + avg_cost / T)
 print(f"The similarity of the two audio clips has a value of:\n{similarity}")
